@@ -16,6 +16,29 @@ gcloud projects add-iam-policy-binding playground-s-11-87dc96ca \
 gcloud projects add-iam-policy-binding playground-s-11-87dc96ca \
 --member=serviceAccount:sa-kuber@playground-s-11-87dc96ca.iam.gserviceaccount.com --role=roles/compute.networkUser
 
+gcloud iam service-accounts get-iam-policy 526650703616-compute@developer.gserviceaccount.com \
+--format=json > policy.json
+
+then edit the policy.json file like this
+{
+  "bindings": [
+    {
+      "role": "roles/iam.serviceAccountUser",
+      "members": [
+        "serviceAccount:sa-kuber@playground-s-11-87dc96ca.iam.gserviceaccount.com"
+      ]
+    },
+  ],
+  "etag": "ACAB",
+  "version": 1
+}
+
+the run this command:
+gcloud iam service-accounts set-iam-policy 526650703616-compute@developer.gserviceaccount.com ./policy.json
+
+
+
+
 4. create new key for the same.
 5. update the secrets on git hub (settings area) as follows:
 GCP_SA_EMAIL
