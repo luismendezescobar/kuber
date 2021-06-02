@@ -5,7 +5,17 @@ Instructions to use with github acctions
 gsutil mb -c STANDARD -l us-west1 on gs://tf-state-007
 3.create a service account with the following specs:
 name:sa_kuber
-permissions: Kubernetes Engine Admin, Storage Admin
+permissions: Kubernetes Engine Admin, Storage Admin, compute network user
+
+gcloud projects add-iam-policy-binding playground-s-11-87dc96ca \
+--member=serviceAccount:sa-kuber@playground-s-11-87dc96ca.iam.gserviceaccount.com --role=roles/container.admin
+
+gcloud projects add-iam-policy-binding playground-s-11-87dc96ca \
+--member=serviceAccount:sa-kuber@playground-s-11-87dc96ca.iam.gserviceaccount.com --role=rroles/storage.admin
+
+gcloud projects add-iam-policy-binding playground-s-11-87dc96ca \
+--member=serviceAccount:sa-kuber@playground-s-11-87dc96ca.iam.gserviceaccount.com --role=roles/compute.networkUser
+
 4. create new key for the same.
 5. update the secrets on git hub (settings area) as follows:
 GCP_SA_EMAIL
