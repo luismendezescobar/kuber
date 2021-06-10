@@ -2,7 +2,8 @@
 Instructions to use with github acctions
 1.create a sandbox in linux academy
 2.create the bucket for the terraform state and folder with the below codes in cloud shell
-gsutil mb -c STANDARD -l us-west1 on gs://tf-state-007
+gsutil mb -c standard -l us-west1 gs://tf-state-007
+skip step 3
 3.create a service account with the following specs:
 name:sa_kuber
 permissions: Kubernetes Engine Admin, Storage Admin, compute network user
@@ -16,6 +17,10 @@ gcloud projects add-iam-policy-binding playground-s-11-87dc96ca \
 gcloud projects add-iam-policy-binding playground-s-11-87dc96ca \
 --member=serviceAccount:sa-kuber@playground-s-11-87dc96ca.iam.gserviceaccount.com --role=roles/compute.networkUser
 
+gcloud projects add-iam-policy-binding playground-s-11-87dc96ca \
+--member=serviceAccount:sa-kuber@playground-s-11-87dc96ca.iam.gserviceaccount.com --role=roles/iam.serviceAccountCreator
+
+
 gcloud iam service-accounts get-iam-policy 526650703616-compute@developer.gserviceaccount.com \
 --format=json > policy.json
 
@@ -23,7 +28,7 @@ then edit the policy.json file like this
 {
   "bindings": [
     {
-      "role": "roles/iam.serviceAccountUser",
+      "role": "roles/iam.serviceAccounts.create",       
       "members": [
         "serviceAccount:sa-kuber@playground-s-11-87dc96ca.iam.gserviceaccount.com"
       ]
@@ -36,7 +41,15 @@ then edit the policy.json file like this
 the run this command:
 gcloud iam service-accounts set-iam-policy 526650703616-compute@developer.gserviceaccount.com ./policy.json
 
+3a.create a service account (manually) with the following specs:
+gcloud iam service-accounts create sa_kuber \
+    --description="account for kubernetes" \
+    --display-name="sa_kuber"
 
+name:sa_kuber
+permissions: editor
+gcloud projects add-iam-policy-binding playground-s-11-f24dc53b \
+--member=serviceAccount:sa-kuber@playground-s-11-f24dc53b.iam.gserviceaccount.com --role=roles/editor
 
 
 4. create new key for the same.
@@ -44,7 +57,7 @@ gcloud iam service-accounts set-iam-policy 526650703616-compute@developer.gservi
 GCP_SA_EMAIL
 GOOGLE_APPLICATION_CREDENTIALS
 GCP_PROJECT
-6. update the project id in the below code line 19
+6. update the project id in the below code line 63
 7.upload the code to develop and then to master
 8.the job should get started automatically and deploy the cluster automatically
 
@@ -53,7 +66,7 @@ GCP_PROJECT
 
 module "gke" {
   source                     = "terraform-google-modules/kubernetes-engine/google"
-  project_id                 = "playground-s-11-87dc96ca"
+  project_id                 = "playground-s-11-f24dc53b"
   name                       = "gke-test-1"
   region                     = "us-west1"
   #zones                      = ["us-west1-a", "us-west1-b", "us-west1-c"]
@@ -71,7 +84,7 @@ module "gke" {
       name               = "default-node-pool"
       machine_type       = "n1-standard-1"
       min_count          = 1
-      max_count          = 1
+      max_count          = 2
       local_ssd_count    = 0
       disk_size_gb       = 10
       disk_type          = "pd-standard"
