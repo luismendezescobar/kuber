@@ -1,7 +1,8 @@
 /*
 Instructions to use with github acctions
 1.create a sandbox in linux academy
-2.create the bucket for the terraform state and folder with the below codes in cloud shell
+2.enable kubernetes api and Cloud Resource Manager API 
+3.create the bucket for the terraform state and folder with the below codes in cloud shell
 gsutil mb -c standard -l us-west1 gs://tf-state-007
 skip step 3
 3.create a service account with the following specs:
@@ -58,8 +59,9 @@ GCP_SA_EMAIL
 GOOGLE_APPLICATION_CREDENTIALS
 GCP_PROJECT
 6. update the project id in the below code line 63
-7.upload the code to develop and then to master
-8.the job should get started automatically and deploy the cluster automatically
+7 update the service account on line 96
+8.upload the code to develop and then to master
+9.the job should get started automatically and deploy the cluster automatically
 
 */
 
@@ -91,7 +93,7 @@ module "gke" {
       image_type         = "COS"
       auto_repair        = true
       auto_upgrade       = true
-      #service_account    = "project-service-account@production-host-project-274122.iam.gserviceaccount.com"
+      service_account    = "sa-kuber@playground-s-11-f24dc53b.iam.gserviceaccount.com"
       preemptible        = false
       initial_node_count = 1
     },
