@@ -43,17 +43,20 @@ the run this command:
 gcloud iam service-accounts set-iam-policy 526650703616-compute@developer.gserviceaccount.com ./policy.json
 
 3a.create a service account (manually) with the following specs:
-gcloud iam service-accounts create sa_kuber \
+gcloud iam service-accounts create sa-kuber \
     --description="account for kubernetes" \
-    --display-name="sa_kuber"
+    --display-name="sa-kuber"
 
 name:sa_kuber
 permissions: editor
-gcloud projects add-iam-policy-binding playground-s-11-f24dc53b \
---member=serviceAccount:sa-kuber@playground-s-11-f24dc53b.iam.gserviceaccount.com --role=roles/editor
+gcloud projects add-iam-policy-binding playground-s-11-fbdef3b1 \
+--member=serviceAccount:sa-kuber@playground-s-11-fbdef3b1.iam.gserviceaccount.com --role=roles/editor
 
 
-4. create new key for the same.
+4. create new key for the same:
+gcloud iam service-accounts keys create key.json \
+--iam-account=sa-kuber@playground-s-11-fbdef3b1.iam.gserviceaccount.com
+
 5. update the secrets on git hub (settings area) as follows:
 GCP_SA_EMAIL
 GOOGLE_APPLICATION_CREDENTIALS
@@ -68,7 +71,7 @@ GCP_PROJECT
 
 module "gke" {
   source                     = "terraform-google-modules/kubernetes-engine/google"
-  project_id                 = "playground-s-11-f24dc53b"
+  project_id                 = "playground-s-11-fbdef3b1"
   name                       = "gke-test-1"
   region                     = "us-west1"
   #zones                      = ["us-west1-a", "us-west1-b", "us-west1-c"]
@@ -80,6 +83,7 @@ module "gke" {
   http_load_balancing        = false
   horizontal_pod_autoscaling = true
   network_policy             = false
+  remove_default_node_pool   = true
 
   node_pools = [
     {
@@ -93,9 +97,9 @@ module "gke" {
       image_type         = "COS"
       auto_repair        = true
       auto_upgrade       = true
-      service_account    = "sa-kuber@playground-s-11-f24dc53b.iam.gserviceaccount.com"
+      service_account    = "sa-kuber@playground-s-11-fbdef3b1.iam.gserviceaccount.com"
       preemptible        = false
-      initial_node_count = 1
+      initial_node_count = 3               #you can modify this part
     },
   ]
 
