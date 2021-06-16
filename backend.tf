@@ -5,7 +5,7 @@ terraform {
         }
     }
     backend "gcs" {
-        bucket = "tf-state-07"
+        bucket = "tf-state-008"
         prefix = "kuber"    
    }
 }
